@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
                              precision_score, recall_score)
-from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 
 from preprocess import CAT_COLS, NUM_COLS, clean, encode
@@ -23,15 +23,13 @@ df = encode(df)
 X, y = df.drop("Loan_Approved", axis=1), df["Loan_Approved"]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=44)
 
-# --- pick ccp_alpha with CROSS-VALIDATION on the train set only (test set stays untouched) ---
-base = DecisionTreeClassifier(max_depth=7, min_samples_split=5, random_state=44)
-alphas = sorted(set(base.cost_complexity_pruning_path(X_train, y_train).ccp_alphas))
-search = GridSearchCV(base, {"ccp_alpha": alphas}, scoring="f1", cv=5, n_jobs=-1)
-search.fit(X_train, y_train)
-model = search.best_estimator_
-print("best ccp_alpha:", search.best_params_["ccp_alpha"])
+# --- same model as your updated notebook (ccp_alpha is the value you found) ---
+CCP_ALPHA = 0.001316678691197293
+model = DecisionTreeClassifier(max_depth=7, min_samples_split=5,
+                               ccp_alpha=CCP_ALPHA, random_state=44)
+model.fit(X_train, y_train)
 
-# --- evaluate ONCE on the test set ---
+# --- evaluate on the test set ---
 pred = model.predict(X_test)
 meta["metrics"] = {
     "accuracy": accuracy_score(y_test, pred),

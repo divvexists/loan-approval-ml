@@ -21,7 +21,7 @@ st.caption("Decision-tree model trained on historical loan applications.")
 
 tab_predict, tab_model = st.tabs(["Check an application", "Model performance"])
 
-
+# ------------------------------------------------------------------ PREDICT TAB
 with tab_predict:
     with st.form("applicant"):
         c1, c2, c3 = st.columns(3)
@@ -79,7 +79,7 @@ with tab_predict:
         st.progress(prob)
         st.caption("This is a model estimate, not a final lending decision.")
 
-
+# ------------------------------------------------------------------ MODEL TAB
 with tab_model:
     m = meta["metrics"]
     a, b, c, d = st.columns(4)
